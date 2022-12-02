@@ -7,11 +7,17 @@ enum RPS {
     Scissors
 }
 
-fn normalize_me(me: char) -> RPS {
+enum GameState {
+    Victory = 6,
+    Draw = 3,
+    Loss = 0
+}
+
+fn normalize_me(me: char) -> GameState {
     match me {
-        'X' => RPS::Rock,
-        'Y' => RPS::Paper,
-        'Z' => RPS::Scissors,
+        'X' => GameState::Loss,
+        'Y' => GameState::Draw,
+        'Z' => GameState::Victory,
         _ => {
             panic!("Wrong me character: {}", me);
         }
@@ -40,7 +46,7 @@ impl ScoreCounter {
         }
     }
 
-    fn score_my_choice(&self, me: RPS) -> u64 {
+    fn score_my_choice(&self, me: &RPS) -> u64 {
         match me {
             RPS::Rock => 1,
             RPS::Paper => 2,
@@ -48,31 +54,33 @@ impl ScoreCounter {
         }
     }
 
-    fn score_the_game(&self, me: RPS, enemy: RPS) -> u64 {
-        match me {
-            RPS::Rock => match enemy {
-                RPS::Rock => 3,
-                RPS::Paper => 0,
-                RPS::Scissors => 6
+    fn get_my_choice(&self, me: &GameState, enemy: &RPS) -> RPS {
+        match enemy {
+            RPS::Rock => match me {
+                GameState::Draw => RPS::Rock,
+                GameState::Loss => RPS::Scissors,
+                GameState::Victory => RPS::Paper
             },
-            RPS::Paper => match enemy {
-                RPS::Rock => 6,
-                RPS::Paper => 3,
-                RPS::Scissors => 0
+            RPS::Paper => match me {
+                GameState::Loss => RPS::Rock,
+                GameState::Draw => RPS::Paper,
+                GameState::Victory => RPS::Scissors
             },
-            RPS::Scissors => match enemy {
-                RPS::Rock => 0,
-                RPS::Paper => 6,
-                RPS::Scissors => 3
+            RPS::Scissors => match me {
+                GameState::Loss => RPS::Paper,
+                GameState::Draw => RPS::Scissors,
+                GameState::Victory => RPS::Rock
             }
         }
     }
 
     fn process_round(&mut self, me: char, enemy: char) {
-        let my_score = self.score_my_choice(normalize_me(me));
-        let game_score = self.score_the_game(normalize_me(me), normalize_enemy(enemy));
-        println!("{} {} => {} + {}", enemy, me, my_score, game_score);
-        self.score += my_score + game_score;
+        let game_end = normalize_me(me);
+        let my_choice = self.get_my_choice(&game_end, &normalize_enemy(enemy));
+        let my_score = self.score_my_choice(&my_choice);
+        
+        println!("{} {} => {} + {}", enemy, me, my_score, game_end as u64);
+        self.score += my_score + game_end as u64;
     }
 }
 
