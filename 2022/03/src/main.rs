@@ -22,17 +22,20 @@ fn priority(c: u8) -> u8 {
 fn main() {
     let input = File::open("input.txt").unwrap();
     let mut sum = 0 as u64;
+    let mut lines = Vec::new();
     for line_raw in BufReader::new(input).lines() {
         let line = line_raw.unwrap();
-        let comp1 = &line[0..(line.len()/2)];
-        let comp2 = &line[(line.len()/2)..(line.len())];
-        let data1 = to_hash_set(comp1);
-        let data2 = to_hash_set(comp2);
-        let intersection = data1.intersection(&data2);
-        for letter in intersection {
-            let priority = priority(*letter as u8);
-            println!("{} -> {}", *letter, priority);
-            sum += priority as u64;
+        lines.push(line);
+        if lines.len() == 3 {
+            let line_set1 = to_hash_set(&lines[0]);
+            let line_set2 = to_hash_set(&lines[1]);
+            let line_set3 = to_hash_set(&lines[2]);
+            for c in line_set1.iter().filter(|c| line_set2.contains(c)).filter(|c| line_set3.contains(c)) {
+                sum += priority(*c as u8) as u64;
+                print!("{}", c);
+            }
+            print!("\n");
+            lines.clear();
         }
     }
     println!("{}", sum);
