@@ -29,6 +29,11 @@ impl CleaningRange {
     fn fully_contains(&self, other: &Self) -> bool {
         self.begin >= other.begin && self.end <= other.end
     }
+
+    fn overlaps_with(&self, other: &Self) -> bool {
+        (self.begin <= other.end && self.end >= other.end) ||
+        (self.begin <= other.begin && self.end >= other.begin)
+    }
 }
 
 fn main() {
@@ -40,7 +45,7 @@ fn main() {
             Some(index) => {
                 let range_a = CleaningRange::from_str(&line[0..index]).unwrap();
                 let range_b = CleaningRange::from_str(&line[index + 1..line.len()]).unwrap();
-                if range_a.fully_contains(&range_b) || range_b.fully_contains(&range_a) {
+                if range_a.overlaps_with(&range_b) || range_b.overlaps_with(&range_a) {
                     cnt += 1;
                 }
             },
