@@ -65,7 +65,7 @@ impl CrateManipulator {
             let mut source = self.stacks[from_index].clone();
             {
                 let data_to_transfer = &source[source.len()-count..source.len()];
-                self.stacks[to_index].push_str(&data_to_transfer.chars().rev().collect::<String>());
+                self.stacks[to_index].push_str(&data_to_transfer);
             }
             source.truncate(source.len() - count);
             self.stacks[from_index] = source;
