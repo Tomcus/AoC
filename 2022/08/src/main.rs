@@ -17,71 +17,53 @@ fn main() {
             width = matrix.len();
         }
     }
-    let mut count = 0;
+    let mut max = 0;
     let height = matrix.len() / width;
     for y in 1..height-1 {
         for x in 1..width-1 {
             let start_index = x + y * width;
             let tree_height = matrix[start_index];
-            let mut visible = true;
-            for i in 0..x {
+            let mut curr_count = 0;
+            let mut total_count = 1;
+            for i in (0..x).rev() {
                 let index = i + y * width;
+                curr_count += 1;
                 if matrix[index] >= tree_height {
-                    println!("{};{} - not visible from left {} >= {}", x, y, matrix[index], tree_height);
-                    visible = false;
                     break;
                 }
             }
-            if visible {
-                println!("{};{} - visible from left!", x, y);
-                count += 1;
-                continue;
-            }
-            visible = true;
+            total_count *= curr_count;
+            curr_count = 0;
             for i in x+1..width {
                 let index = i + y * width;
+                curr_count += 1;
                 if matrix[index] >= tree_height {
-                    println!("{};{} - not visible from right {} >= {}", x, y, matrix[index], tree_height);
-                    visible = false;
                     break;
                 }
             }
-            if visible {
-                println!("{};{} - visible from right!", x, y);
-                count += 1;
-                continue;
-            }
-            visible = true;
-            for i in 0..y {
+            total_count *= curr_count;
+            curr_count = 0;
+            for i in (0..y).rev() {
                 let index = x + i * width;
+                curr_count += 1;
                 if matrix[index] >= tree_height {
-                    println!("{};{} - not visible from top {} >= {}", x, y, matrix[index], tree_height);
-                    visible = false;
                     break;
                 }
             }
-            if visible {
-                println!("{};{} - visible from top!", x, y);
-                count += 1;
-                continue;
-            }
-            visible = true;
+            total_count *= curr_count;
+            curr_count = 0;
             for i in y+1..height {
                 let index = x + i * width;
+                curr_count += 1;
                 if matrix[index] >= tree_height {
-                    println!("{};{} - not visible from bottom {} >= {}", x, y, matrix[index], tree_height);
-                    visible = false;
                     break;
                 }
             }
-            if visible {
-                println!("{};{} - visible from bottom!", x, y);
-                count += 1;
-                continue;
+            total_count *= curr_count;
+            if total_count > max {
+                max = total_count;
             }
         }
     }
-    count += 2*width;
-    count += 2*(height - 2);
-    println!("{}", count);
+    println!("{}", max);
 }
