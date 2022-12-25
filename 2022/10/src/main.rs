@@ -5,7 +5,6 @@ use std::str::FromStr;
 struct CPU {
     counter: i64,
     x: i64,
-    signal: i64,
 }
 
 enum Instruction {
@@ -16,17 +15,21 @@ enum Instruction {
 impl CPU {
     fn new() -> Self {
         Self {
-            counter: 1,
+            counter: 0,
             x: 1,
-            signal: 0,
         }
     }
 
     fn increment_counter(&mut self) {
+        let counter_pixel_pos = self.counter % 40;
+        if self.x - 1 <= counter_pixel_pos && self.x + 1 >= counter_pixel_pos {
+            print!("#");
+        } else {
+            print!(".");
+        }
         self.counter += 1;
-        if self.counter <= 220 && (self.counter - 20) % 40 == 0 {
-            self.signal += self.x * self.counter;
-            println!("[{},{}]: {} + {}", self.counter, self.x, self.signal - (self.x * self.counter), self.x * self.counter);
+        if self.counter > 0 && self.counter % 40 == 0 {
+            print!("\n");
         }
     }
 
@@ -35,9 +38,8 @@ impl CPU {
             Instruction::Noop => { self.increment_counter(); }
             Instruction::Addx(value) => {
                 self.increment_counter();
-                self.x += value;
                 self.increment_counter();
-                println!("[{},{}]", self.counter, self.x);
+                self.x += value;
             }
         }
     }
@@ -49,7 +51,6 @@ fn main() {
     for line_raw in BufReader::new(input).lines() {
         let line = line_raw.unwrap();
         let splits: Vec<&str> = line.split(' ').collect();
-        println!("{}", line);
         match splits[0] {
             "noop" => {
                 cpu.process_instruction(Instruction::Noop);
@@ -61,5 +62,4 @@ fn main() {
             _ => { panic!("Unknown instruction: {}", splits[0]); }
         }
     }
-    println!("Signal: {}", cpu.signal);
 }
