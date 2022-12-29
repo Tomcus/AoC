@@ -15,7 +15,7 @@ struct Monkey {
     processed_items: usize
 }
 
-fn process_monkey(items: &Items, operation: &Action, test_divisible_by: u64) -> (Items, Items) { 
+fn process_monkey(items: &Items, operation: &Action, test_divisible_by: u64, limit_base: u64) -> (Items, Items) { 
         let mut ok_list = vec![];
         let mut fail_list = vec![];
         items.iter().map(|e| -> u64 {
@@ -31,7 +31,7 @@ fn process_monkey(items: &Items, operation: &Action, test_divisible_by: u64) -> 
                 }
             }
         }).map(|e| {
-            e / 3
+            e % limit_base
         }).for_each(|e| {
             if e % test_divisible_by == 0 {
                 ok_list.push(e);
@@ -42,13 +42,13 @@ fn process_monkey(items: &Items, operation: &Action, test_divisible_by: u64) -> 
         (ok_list, fail_list)
 }
 
-fn process_round(monkeys: &mut Vec<Monkey>) {
+fn process_round(monkeys: &mut Vec<Monkey>, limit_base: u64) {
     let len = monkeys.len();
     for i in 0..len {
         let (ok_list, ok_index, fail_list, fail_index) = {
             let monkey = &mut monkeys[i];
             monkey.processed_items += monkey.items.len();
-            let (ok_list, fail_list) = process_monkey(&monkey.items, &monkey.operation, monkey.test_divisible_by);
+            let (ok_list, fail_list) = process_monkey(&monkey.items, &monkey.operation, monkey.test_divisible_by, limit_base);
             monkey.items.clear();
             (ok_list, monkey.ok_test_index, fail_list, monkey.fail_test_index)
         };
@@ -124,8 +124,14 @@ fn main() {
             processed_items: 0
         },
     ];
-    for _i in 0..20 {
-        process_round(&mut monkeys);
+    let data: std::collections::HashSet<u64> = monkeys.iter().map(|m| {
+        m.test_divisible_by
+    }).collect();
+    let lcm = data.into_iter().fold(1, |l, el| {
+        l * el
+    });
+    for _i in 0..10000 {
+        process_round(&mut monkeys, lcm);
     }
     for i in 0..monkeys.len() {
         println!("Monkey #{}: {}", i, monkeys[i].processed_items);
