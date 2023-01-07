@@ -31,7 +31,7 @@ fn can_visit(a: char, b: char) -> bool {
     if bb == 'E' {
         bb = 'z';
     }
-    let can_visit = (aa as i32) - (bb as i32) >= -1;
+    let can_visit = (aa as i32) - (bb as i32) <= 1;
     can_visit
 }
 
@@ -40,16 +40,17 @@ const DOWN: Position = Position { x: 1, y: 0 };
 const LEFT: Position = Position { x: 0, y: -1 };
 const RIGHT: Position = Position { x: 0, y: 1 };
 
-fn find_path(grid: &str, start: &Position, end: &Position, width: i64, height: i64) {
+fn find_path(grid: &str, end: &Position, width: i64, height: i64) {
     let mut to_visit: HashSet<Position> = HashSet::new();
-    to_visit.insert(start.clone());
+    to_visit.insert(end.clone());
     let mut visited: HashSet<Position> = HashSet::new();
-    visited.insert(start.clone());
+    visited.insert(end.clone());
     let mut len = 0;
     'outer :while to_visit.len() > 0 {
         let mut new_visit = HashSet::new();
         for pos in to_visit {
-            if pos == *end {
+            if grid.chars().nth((pos.x + pos.y * width) as usize).unwrap() == 'a' ||
+               grid.chars().nth((pos.x + pos.y * width) as usize).unwrap() == 'S' {
                 println!("Found!");
                 break 'outer;
             } else {
@@ -114,6 +115,6 @@ fn main() {
         }
     }
     println!("Loaded");
-    find_path(&grid, &start, &end, width.unwrap(), height);
+    find_path(&grid, &end, width.unwrap(), height);
 }
 
