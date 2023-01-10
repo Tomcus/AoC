@@ -8,7 +8,7 @@ use nom::{
 };
 use std::io::BufRead;
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, Clone, Eq, Ord)]
 enum Item {
     Int(i64),
     List(Vec<Item>)
@@ -58,6 +58,16 @@ impl PartialOrd for Item {
     }
 }
 
+impl PartialEq for Item {
+    fn eq(&self, other: &Self) -> bool {
+        self.partial_cmp(&other).unwrap() == std::cmp::Ordering::Equal
+    }
+    
+    fn ne(&self, other: &Self) -> bool {
+        self.partial_cmp(&other).unwrap() != std::cmp::Ordering::Equal
+    }
+}
+
 fn parse_item(input: &str) -> IResult<&str, Item> {
     let mut parser = alt((parse_list, parse_int));
     parser(input)
@@ -76,8 +86,12 @@ fn parse_int(input: &str) -> IResult<&str, Item> {
 fn main() {
     let file = std::fs::File::open("input.txt").unwrap();
     let mut reader = std::io::BufReader::new(file);
-    let mut sum = 0;
-    let mut index = 1;
+    let divider_a = Item::List(vec![Item::List(vec![Item::Int(2)])]);
+    let divider_b = Item::List(vec![Item::List(vec![Item::Int(6)])]);
+    let mut data = vec![
+        divider_a.clone(),
+        divider_b.clone()
+    ];
     loop {
         let mut left_line = String::new();
         if reader.read_line(&mut left_line).unwrap() == 0 {
@@ -90,11 +104,18 @@ fn main() {
         
         let left_packet = parse_item(&left_line).unwrap();
         let right_packet = parse_item(&right_line).unwrap();
-        let cmp = left_packet.partial_cmp(&right_packet).unwrap();
-        if cmp == std::cmp::Ordering::Less {
-            sum += index;
-        }
-        index += 1;
+
+        data.push(left_packet.1);
+        data.push(right_packet.1);
     }
-    println!("Sum: {}", sum);
+
+    let mut res = 1;
+    data.sort_by(|a,b| a.partial_cmp(b).unwrap());
+    for (i, item) in data.iter().enumerate() {
+        if item.eq(&divider_a) || item.eq(&divider_b) {
+            res *= i + 1;
+            println!("{:3}: {:?}", i + 1, item);
+        }
+    }
+    println!("{}", res);
 }
