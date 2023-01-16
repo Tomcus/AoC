@@ -80,15 +80,15 @@ fn main() {
     }
     let original_cnt = points.len();
     let max_y = points.iter().map(|p| p.y).max().unwrap();
-    'outer: loop {
+    loop {
         let mut point = Point {x: 500, y: 0};
         if points.contains(&point) {
             break;
         }
         loop {
             let point_under = Point{x: point.x, y: point.y + 1};
-            if point_under.y > max_y {
-                break 'outer;
+            if point_under.y == max_y + 2 {
+                break;
             }
             if !points.contains(&point_under) {
                 point = point_under;
