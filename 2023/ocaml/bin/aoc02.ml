@@ -16,9 +16,9 @@ let split separator input =
 
 let validate_color_and_val num color =
     match color with
-    | "red" -> num <= 12
-    | "green" -> num <= 13
-    | "blue" -> num <= 14
+    | "red" -> [num; 1; 1] 
+    | "green" -> [1; num; 1]
+    | "blue" -> [1; 1; num]
     | _ -> raise (Imposible "validate_color_and_val")
 
 let rec valid_pull pull =
@@ -26,24 +26,20 @@ let rec valid_pull pull =
     | (number_and_color, []) -> 
         Scanf.sscanf (Utils.implode number_and_color) " %i %s" validate_color_and_val
     | (number_and_color, rest) ->
-        Scanf.sscanf (Utils.implode number_and_color) " %i %s" validate_color_and_val && valid_pull rest
+        List.map2 Int.max (Scanf.sscanf (Utils.implode number_and_color) " %i %s" validate_color_and_val) (valid_pull rest)
 
 let rec valid_pulls pulls =
     match split ';' pulls with
     | (pull, []) -> valid_pull pull
-    | (pull, rest) -> valid_pull pull && valid_pulls rest
+    | (pull, rest) -> List.map2 Int.max (valid_pull pull) (valid_pulls rest)
 
 let valid pulls = 
     valid_pulls pulls
 
 let process_line line =
     match split ':' line with
-    | (game_id, pulls) ->
-        let game_num = int_of_string (Utils.implode game_id) in
-        if valid pulls then
-            game_num
-        else
-            0
+    | (_, pulls) ->
+        List.fold_left ( * ) 1 (valid pulls)
 
 let rec process_file file =
     let line = try input_line file with End_of_file -> "" in
