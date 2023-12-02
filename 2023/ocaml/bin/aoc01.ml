@@ -1,11 +1,6 @@
 let file_name = Array.get Sys.argv 1
 let none_number = ' '
 
-let rec explode text =
-    match text with
-    | "" -> []
-    | non_empty -> non_empty.[0] :: explode (String.sub non_empty 1 (String.length non_empty - 1))
-
 let rec process_line line first last =
     let helper rest first peek =
         if first = none_number then
@@ -42,7 +37,7 @@ let rec process_file file =
     match String.length line with
     | 0 -> 0
     | _ -> 
-        let line_res = process_line (explode line) none_number none_number in
+        let line_res = process_line (Utils.explode line) none_number none_number in
         line_res + process_file file
 
 let () =
