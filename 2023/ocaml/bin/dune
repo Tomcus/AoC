@@ -1,4 +1,4 @@
 (executables 
-  (public_names aoc01 aoc02)
+  (public_names aoc01 aoc02 aoc03)
   (libraries utils))
 
