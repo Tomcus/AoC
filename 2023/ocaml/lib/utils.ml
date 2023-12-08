@@ -1,3 +1,23 @@
+let file_name = Array.get Sys.argv 1
+
+let rec for_each_line file line_proc res_folder def_res =
+    let line = try input_line file with End_of_file -> "" in
+    if String.length line = 0 then
+        def_res
+    else
+        res_folder (line_proc line) (for_each_line file line_proc res_folder def_res)
+
+let for_each_line_from_file_input line_processor result_folder default_res =
+    let file = open_in file_name in
+    for_each_line file line_processor result_folder default_res
+
+let rec parse_list str pattern delim =
+    let pattern_with_delimiter = pattern ^ delim ^ "%s" in
+    try
+        Scanf.sscanf str pattern_with_delimiter (fun x rest -> x :: parse_list rest pattern delim)
+    with Scanf.Scan_failure _ ->
+        Scanf.sscanf str pattern (fun x -> [x])
+
 let rec explode text =
     match text with
     | "" -> []
