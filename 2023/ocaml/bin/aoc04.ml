@@ -22,9 +22,17 @@ let rec calculate_score winning drawn =
         else
             calculate_score winning rest
 
+let stoi str =
+    let str = String.trim str in
+    int_of_string_opt str
+
 let calculate_score_for_line line =
-    let (winning, drawn) = Scanf.sscanf line "Card %s: %s | %s" (fun _ winning_raw drawn_raw -> (Utils.parse_list winning_raw "%d" " "), (Utils.parse_list drawn_raw "%d" " ")) in
-    let count = calculate_score winning, drawn in
+    let first_split = String.split_on_char ':' line in
+    let data = List.nth first_split 1 in
+    let second_split = String.split_on_char '|' (String.trim data) in
+    let winning = List.filter_map stoi (String.split_on_char ' ' (List.nth second_split 0)) in
+    let drawn = List.filter_map stoi (String.split_on_char ' ' (List.nth second_split 1)) in
+    let count = calculate_score winning drawn in
     powish_2 count
 
 let () =

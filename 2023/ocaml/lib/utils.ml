@@ -11,10 +11,9 @@ let for_each_line_from_file_input line_processor result_folder default_res =
     let file = open_in file_name in
     for_each_line file line_processor result_folder default_res
 
-let rec parse_list str pattern delim =
-    let pattern_with_delimiter = pattern ^ delim ^ "%s" in
+let rec parse_list str pattern pattern_with_delimiter =
     try
-        Scanf.sscanf str pattern_with_delimiter (fun x rest -> x :: parse_list rest pattern delim)
+        Scanf.sscanf str pattern_with_delimiter (fun x rest -> x :: parse_list rest pattern pattern_with_delimiter)
     with Scanf.Scan_failure _ ->
         Scanf.sscanf str pattern (fun x -> [x])
 
