@@ -7,7 +7,7 @@ let rec for_each_line file line_proc res_folder def_res =
     else
         res_folder (line_proc line) (for_each_line file line_proc res_folder def_res)
 
-let for_each_line_from_file_input line_processor result_folder default_res =
+let fold_line_from_file_input line_processor result_folder default_res =
     let file = open_in file_name in
     for_each_line file line_processor result_folder default_res
 
