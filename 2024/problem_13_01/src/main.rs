@@ -3,7 +3,7 @@ use lazy_static::lazy_static;
 use regex::Regex;
 use std::cmp::*;
 use std::io::{BufRead, Lines};
-use std::ops::{Add, Sub};
+use std::ops::{Add, Sub, Mul};
 
 #[derive(Debug, Eq, Hash, PartialEq, PartialOrd, Ord, Clone)]
 struct Point(isize, isize);
@@ -36,9 +36,25 @@ impl Sub for &Point {
     }
 }
 
+impl Mul<Point> for isize {
+    type Output = Point;
+
+    fn mul(self, rhs: Point) -> Self::Output {
+        Point(self * rhs.0, self * rhs.1)
+    }
+}
+
+impl Mul<&Point> for isize {
+    type Output = Point;
+
+    fn mul(self, rhs: &Point) -> Self::Output {
+        Point(self * rhs.0, self * rhs.1)
+    }
+}
+
 fn match_line<'a>(line: &'a str, re: &'a Regex) -> Result<regex::Captures<'a>> {
     re.captures(line)
-        .ok_or_else(|| anyhow!("Unable to match regex on line"))
+        .ok_or_else(|| anyhow!("Unable to match regex on line: {line}"))
 }
 
 fn parse_input<T>(lines: &mut Lines<T>) -> Result<Option<(Point, Point, Point)>>
@@ -110,43 +126,6 @@ where
     Ok(Some((button_a, button_b, dest)))
 }
 
-#[derive(Eq, Debug)]
-struct QueueItem {
-    pub remaining: Point,
-    pub pressed: Point,
-}
-
-impl QueueItem {
-    pub fn is_valid(&self) -> bool {
-        self.remaining.0 >= 0
-            && self.remaining.1 >= 0
-            && self.pressed.0 <= 100
-            && self.pressed.1 <= 100
-    }
-
-    pub fn token_cost(&self) -> u16 {
-        self.pressed.0 as u16 * 3 + self.pressed.1 as u16
-    }
-}
-
-impl PartialEq for QueueItem {
-    fn eq(&self, other: &Self) -> bool {
-        self.token_cost().eq(&other.token_cost())
-    }
-}
-
-impl PartialOrd for QueueItem {
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        self.token_cost().partial_cmp(&other.token_cost())
-    }
-}
-
-impl Ord for QueueItem {
-    fn cmp(&self, other: &Self) -> Ordering {
-        self.token_cost().cmp(&other.token_cost())
-    }
-}
-
 fn solve<T>(mut lines: Lines<T>) -> Result<isize>
 where
     T: BufRead,
@@ -155,47 +134,27 @@ where
 
     loop {
         if let Some((button_a, button_b, dest)) = parse_input(&mut lines)? {
-            let mut queue = std::collections::BinaryHeap::new();
-            let mut visited = std::collections::HashSet::new();
-            visited.insert(Point(0, 0));
-
-            queue.push(Reverse(QueueItem {
-                remaining: dest,
-                pressed: Point(0, 0),
-            }));
-
-            while let Some(Reverse(queue_item)) = queue.pop() {
-                if !queue_item.is_valid() {
-                    continue;
-                }
-                if queue_item.remaining == Point(0, 0) {
-                    score += queue_item.token_cost() as isize;
-                    println!("Solution: {}", queue_item.token_cost());
-                    break;
-                }
-
-                let a_pressed_comb = &queue_item.pressed + &Point(1, 0);
-                if !visited.contains(&a_pressed_comb) {
-                    queue.push(Reverse(QueueItem {
-                        remaining: &queue_item.remaining - &button_a,
-                        pressed: a_pressed_comb.clone(),
-                    }));
-                    visited.insert(a_pressed_comb);
-                }
-
-                let b_pressed_comb = &queue_item.pressed + &Point(0, 1);
-                if !visited.contains(&b_pressed_comb) {
-                    queue.push(Reverse(QueueItem {
-                        remaining: &queue_item.remaining - &button_b,
-                        pressed: b_pressed_comb.clone(),
-                    }));
-                    visited.insert(b_pressed_comb);
-                }
+            // A*Xa + B*Xb = X
+            // A*Ya + B*Yb = Y
+            // ===============
+            // A = (X - B*Xb) / Xa
+            // ===============
+            // ((X - B*Xb) / Xa) * Ya + B*Yb = Y
+            // ===============
+            // ((YaX - BXbYa) / Xa) - Y = -BYb
+            // YaX - BXbYa - YXa = -BYbXa
+            // YaX - YXa = BXbYa - BYbXa
+            // YaX - YXa = B(XbYa - YbXa)
+            // (YaX - YXa) / (XbYa - YbXa) = B
+            let clicked_b = (button_a.1 * dest.0 - dest.1 * button_a.0)
+                / (button_b.0 * button_a.1 - button_b.1 * button_a.0);
+            let clicked_a = (dest.0 - clicked_b * button_b.0) / button_a.0;
+            if clicked_a * button_a + clicked_b * button_b == dest {
+                score += 3 * clicked_a + clicked_b;
             }
 
             if let Some(line) = lines.next() {
-                let line = line?;
-                ensure!(line.trim() == "");
+                ensure!(line?.trim().is_empty());
             } else {
                 break;
             }
