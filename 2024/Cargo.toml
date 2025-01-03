@@ -1,0 +1,26 @@
+[workspace]
+
+members = [
+    "problem_01_01",
+    "problem_01_02",
+    "problem_02_01",
+    "problem_02_02",
+    "problem_03_01",
+    "problem_03_02",
+    "problem_04_01",
+    "problem_04_02",
+    "problem_05_01",
+    "problem_05_02",
+    "problem_07_01",
+    "problem_07_02",
+    "problem_08_01",
+    "problem_08_02",
+    "problem_10_01",
+    "problem_10_02",
+    "problem_11_01",
+    "problem_11_02",
+    "problem_12_01",
+    "problem_12_02",
+    "problem_13_01",
+    "problem_13_02"
+]
