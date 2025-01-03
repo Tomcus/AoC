@@ -13,10 +13,7 @@ impl Rule {
         let before = usize::from_str_radix(splits[0], 10)?;
         let after = usize::from_str_radix(splits[1], 10)?;
 
-        Ok(Self{
-            before,
-            after,
-        })
+        Ok(Self { before, after })
     }
 
     pub fn validate(&self, pages: &[usize]) -> bool {
@@ -34,10 +31,13 @@ impl Rule {
 
 enum State {
     ReadingRules,
-    ProcessingPages
+    ProcessingPages,
 }
 
-fn solve<T>(lines: Lines<T>) -> Result<usize> where T: BufRead {
+fn solve<T>(lines: Lines<T>) -> Result<usize>
+where
+    T: BufRead,
+{
     let mut score = 0;
     let mut rules = vec![];
     let mut state = State::ReadingRules;
@@ -53,14 +53,17 @@ fn solve<T>(lines: Lines<T>) -> Result<usize> where T: BufRead {
                 rules.push(Rule::new(line)?);
             }
             State::ProcessingPages => {
-                let updated_pages: Vec<usize> = line.split(',').map(|a| usize::from_str_radix(a.trim(), 10).unwrap()).collect();
+                let updated_pages: Vec<usize> = line
+                    .split(',')
+                    .map(|a| usize::from_str_radix(a.trim(), 10).unwrap())
+                    .collect();
                 for rule in &rules {
                     if !rule.validate(&updated_pages) {
                         continue 'outer;
                     }
                 }
-                score += updated_pages[updated_pages.len()/2];
-            },
+                score += updated_pages[updated_pages.len() / 2];
+            }
         }
     }
 
@@ -78,7 +81,8 @@ mod tests {
     use super::*;
     #[test]
     fn test_example() {
-        let input = std::io::Cursor::new(b"47|53
+        let input = std::io::Cursor::new(
+            b"47|53
 97|13
 97|61
 97|47
@@ -105,7 +109,8 @@ mod tests {
 75,29,13
 75,97,47,61,53
 61,13,29
-97,13,75,29,47");
+97,13,75,29,47",
+        );
         let res = solve(input.lines()).unwrap();
         assert_eq!(res, 143);
     }

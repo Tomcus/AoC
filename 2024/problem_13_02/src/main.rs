@@ -1,56 +1,8 @@
 use anyhow::*;
+use common::point::Point;
 use lazy_static::lazy_static;
 use regex::Regex;
-use std::cmp::*;
 use std::io::{BufRead, Lines};
-use std::ops::{Add, Sub, Mul};
-
-#[derive(Debug, Eq, Hash, PartialEq, PartialOrd, Ord, Clone)]
-struct Point(isize, isize);
-
-impl Add for Point {
-    type Output = Point;
-    fn add(self, rhs: Point) -> Point {
-        Point(self.0 + rhs.0, self.1 + rhs.1)
-    }
-}
-
-impl Add for &Point {
-    type Output = Point;
-    fn add(self, rhs: &Point) -> Point {
-        Point(self.0 + rhs.0, self.1 + rhs.1)
-    }
-}
-
-impl Sub for Point {
-    type Output = Point;
-    fn sub(self, rhs: Point) -> Point {
-        Point(self.0 - rhs.0, self.1 - rhs.1)
-    }
-}
-
-impl Sub for &Point {
-    type Output = Point;
-    fn sub(self, rhs: &Point) -> Point {
-        Point(self.0 - rhs.0, self.1 - rhs.1)
-    }
-}
-
-impl Mul<Point> for isize {
-    type Output = Point;
-
-    fn mul(self, rhs: Point) -> Self::Output {
-        Point(self * rhs.0, self * rhs.1)
-    }
-}
-
-impl Mul<&Point> for isize {
-    type Output = Point;
-
-    fn mul(self, rhs: &Point) -> Self::Output {
-        Point(self * rhs.0, self * rhs.1)
-    }
-}
 
 fn match_line<'a>(line: &'a str, re: &'a Regex) -> Result<regex::Captures<'a>> {
     re.captures(line)
@@ -148,10 +100,13 @@ where
             // YaX - YXa + Ya*10**13 - Xa*10**13 = BXbYa - BYbXa
             // YaX - YXa + Ya*10**13 - Xa*10**13 = B(XbYa - YbXa)
             // (YaX - YXa + Ya*10**13 - Xa*10**13) / (XbYa - YbXa) = B
-            let clicked_b = (button_a.1 * dest.0 - dest.1 * button_a.0 + OFFSET * (button_a.1 - button_a.0))
+            let clicked_b = (button_a.1 * dest.0 - dest.1 * button_a.0
+                + OFFSET * (button_a.1 - button_a.0))
                 / (button_b.0 * button_a.1 - button_b.1 * button_a.0);
             let clicked_a = (dest.0 + OFFSET - clicked_b * button_b.0) / button_a.0;
-            if clicked_a * button_a + clicked_b * button_b == Point(dest.0 + OFFSET, dest.1 + OFFSET) {
+            if clicked_a * button_a + clicked_b * button_b
+                == Point(dest.0 + OFFSET, dest.1 + OFFSET)
+            {
                 score += 3 * clicked_a + clicked_b;
             }
 
@@ -197,6 +152,6 @@ Button B: X+27, Y+71
 Prize: X=18641, Y=10279";
         let input = std::io::BufReader::new(std::io::Cursor::new(input));
         let res = solve(input.lines()).unwrap();
-        assert_eq!(res, 480);
+        assert_eq!(res, 875318608908);
     }
 }

@@ -1,56 +1,8 @@
 use anyhow::*;
+use common::point::Point;
 use lazy_static::lazy_static;
 use regex::Regex;
-use std::cmp::*;
 use std::io::{BufRead, Lines};
-use std::ops::{Add, Sub, Mul};
-
-#[derive(Debug, Eq, Hash, PartialEq, PartialOrd, Ord, Clone)]
-struct Point(isize, isize);
-
-impl Add for Point {
-    type Output = Point;
-    fn add(self, rhs: Point) -> Point {
-        Point(self.0 + rhs.0, self.1 + rhs.1)
-    }
-}
-
-impl Add for &Point {
-    type Output = Point;
-    fn add(self, rhs: &Point) -> Point {
-        Point(self.0 + rhs.0, self.1 + rhs.1)
-    }
-}
-
-impl Sub for Point {
-    type Output = Point;
-    fn sub(self, rhs: Point) -> Point {
-        Point(self.0 - rhs.0, self.1 - rhs.1)
-    }
-}
-
-impl Sub for &Point {
-    type Output = Point;
-    fn sub(self, rhs: &Point) -> Point {
-        Point(self.0 - rhs.0, self.1 - rhs.1)
-    }
-}
-
-impl Mul<Point> for isize {
-    type Output = Point;
-
-    fn mul(self, rhs: Point) -> Self::Output {
-        Point(self * rhs.0, self * rhs.1)
-    }
-}
-
-impl Mul<&Point> for isize {
-    type Output = Point;
-
-    fn mul(self, rhs: &Point) -> Self::Output {
-        Point(self * rhs.0, self * rhs.1)
-    }
-}
 
 fn match_line<'a>(line: &'a str, re: &'a Regex) -> Result<regex::Captures<'a>> {
     re.captures(line)

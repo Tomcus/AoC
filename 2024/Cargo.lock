@@ -18,6 +18,13 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "34ac096ce696dc2fcabef30516bb13c0a68a11d30131d3df6f04711467681b04"
 
 [[package]]
+name = "common"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+]
+
+[[package]]
 name = "lazy_static"
 version = "1.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -142,6 +149,7 @@ name = "problem_08_01"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "common",
  "lazy_static",
  "regex",
 ]
@@ -151,6 +159,7 @@ name = "problem_08_02"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "common",
  "lazy_static",
  "regex",
 ]
@@ -160,6 +169,7 @@ name = "problem_10_01"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "common",
  "lazy_static",
  "regex",
 ]
@@ -169,6 +179,7 @@ name = "problem_10_02"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "common",
  "lazy_static",
  "regex",
 ]
@@ -196,6 +207,7 @@ name = "problem_12_01"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "common",
  "lazy_static",
  "regex",
 ]
@@ -205,6 +217,7 @@ name = "problem_12_02"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "common",
  "lazy_static",
  "regex",
 ]
@@ -214,6 +227,7 @@ name = "problem_13_01"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "common",
  "lazy_static",
  "regex",
 ]
@@ -223,6 +237,7 @@ name = "problem_13_02"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "common",
  "lazy_static",
  "regex",
 ]

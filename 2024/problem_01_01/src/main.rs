@@ -1,9 +1,12 @@
 use anyhow::*;
-use std::io::{BufRead, Lines};
-use regex::Regex;
 use lazy_static::lazy_static;
+use regex::Regex;
+use std::io::{BufRead, Lines};
 
-fn solve<T>(lines: Lines<T>) -> Result<isize> where T: BufRead {
+fn solve<T>(lines: Lines<T>) -> Result<isize>
+where
+    T: BufRead,
+{
     lazy_static! {
         static ref RE: Regex = Regex::new(r"(\d+)\s+(\d+)").unwrap();
     }
@@ -12,13 +15,25 @@ fn solve<T>(lines: Lines<T>) -> Result<isize> where T: BufRead {
 
     for line_raw in lines {
         let line = line_raw?;
-        let match_res = RE.captures(&line).ok_or_else(|| anyhow!("Unable to match regex"))?;
-        left.push(isize::from_str_radix(match_res.get(1).unwrap().as_str(), 10)?);
-        right.push(isize::from_str_radix(match_res.get(2).unwrap().as_str(), 10)?);
+        let match_res = RE
+            .captures(&line)
+            .ok_or_else(|| anyhow!("Unable to match regex"))?;
+        left.push(isize::from_str_radix(
+            match_res.get(1).unwrap().as_str(),
+            10,
+        )?);
+        right.push(isize::from_str_radix(
+            match_res.get(2).unwrap().as_str(),
+            10,
+        )?);
     }
     left.sort();
     right.sort();
-    Ok(left.iter().zip(right).map(|(left, right)| (left - right).abs()).fold(0, |acc, x| acc + x))
+    Ok(left
+        .iter()
+        .zip(right)
+        .map(|(left, right)| (left - right).abs())
+        .fold(0, |acc, x| acc + x))
 }
 
 fn main() -> Result<()> {
@@ -32,12 +47,14 @@ mod tests {
     use super::*;
     #[test]
     fn test_example() {
-        let input = std::io::Cursor::new(b"3   4
+        let input = std::io::Cursor::new(
+            b"3   4
 4   3
 2   5
 1   3
 3   9
-3   3");
+3   3",
+        );
         let res = solve(input.lines()).unwrap();
         assert_eq!(res, 11);
     }

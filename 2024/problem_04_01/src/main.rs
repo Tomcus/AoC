@@ -2,19 +2,22 @@ use anyhow::*;
 use std::io::{BufRead, Lines};
 
 const OPTIONS: [[(isize, isize); 3]; 8] = [
-    [( 0,  1), ( 0,  2), ( 0,  3)],
-    [( 0, -1), ( 0, -2), ( 0, -3)],
-    [( 1,  0), ( 2,  0), ( 3,  0)],
-    [(-1,  0), (-2,  0), (-3,  0)],
-    [( 1,  1), ( 2,  2), ( 3,  3)],
+    [(0, 1), (0, 2), (0, 3)],
+    [(0, -1), (0, -2), (0, -3)],
+    [(1, 0), (2, 0), (3, 0)],
+    [(-1, 0), (-2, 0), (-3, 0)],
+    [(1, 1), (2, 2), (3, 3)],
     [(-1, -1), (-2, -2), (-3, -3)],
-    [( 1, -1), ( 2, -2), ( 3, -3)],
-    [(-1,  1), (-2,  2), (-3,  3)],
+    [(1, -1), (2, -2), (3, -3)],
+    [(-1, 1), (-2, 2), (-3, 3)],
 ];
 
 const CHARS: [char; 3] = ['M', 'A', 'S'];
 
-fn solve<T>(lines: Lines<T>) -> Result<isize> where T: BufRead {
+fn solve<T>(lines: Lines<T>) -> Result<isize>
+where
+    T: BufRead,
+{
     let mut score = 0;
     let mut matrix: Vec<char> = vec![];
     let mut width: Option<usize> = None;
@@ -50,7 +53,7 @@ fn solve<T>(lines: Lines<T>) -> Result<isize> where T: BufRead {
             }
         }
     }
-    
+
     Ok(score)
 }
 
@@ -65,7 +68,8 @@ mod tests {
     use super::*;
     #[test]
     fn test_example() {
-        let input = std::io::Cursor::new(b"MMMSXXMASM
+        let input = std::io::Cursor::new(
+            b"MMMSXXMASM
 MSAMXMSMSA
 AMXSXMAAMM
 MSAMASMSMX
@@ -74,7 +78,8 @@ XXAMMXXAMA
 SMSMSASXSS
 SAXAMASAAA
 MAMMMXMMMM
-MXMXAXMASX");
+MXMXAXMASX",
+        );
         let res = solve(input.lines()).unwrap();
         assert_eq!(res, 18);
     }

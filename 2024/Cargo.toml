@@ -1,6 +1,6 @@
 [workspace]
 
-members = [
+members = [ "common",
     "problem_01_01",
     "problem_01_02",
     "problem_02_01",

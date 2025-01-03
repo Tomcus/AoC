@@ -1,38 +1,7 @@
 use anyhow::*;
+use common::point::Point;
 use std::collections::{HashMap, HashSet};
 use std::io::{BufRead, Lines};
-use std::ops::{Add, Sub};
-
-#[derive(Debug, Eq, Hash, PartialEq, PartialOrd, Ord, Clone)]
-struct Point(isize, isize);
-
-impl Add for Point {
-    type Output = Point;
-    fn add(self, rhs: Point) -> Point {
-        Point(self.0 + rhs.0, self.1 + rhs.1)
-    }
-}
-
-impl Add for &Point {
-    type Output = Point;
-    fn add(self, rhs: &Point) -> Point {
-        Point(self.0 + rhs.0, self.1 + rhs.1)
-    }
-}
-
-impl Sub for Point {
-    type Output = Point;
-    fn sub(self, rhs: Point) -> Point {
-        Point(self.0 - rhs.0, self.1 - rhs.1)
-    }
-}
-
-impl Sub for &Point {
-    type Output = Point;
-    fn sub(self, rhs: &Point) -> Point {
-        Point(self.0 - rhs.0, self.1 - rhs.1)
-    }
-}
 
 fn is_on_map(point: &Point, width: isize, height: isize) -> bool {
     point.0 >= 0 && point.0 < width && point.1 >= 0 && point.1 < height

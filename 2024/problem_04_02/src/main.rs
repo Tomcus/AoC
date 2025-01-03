@@ -1,9 +1,7 @@
 use anyhow::*;
 use std::io::{BufRead, Lines};
 
-const TO_CHECK: [(isize, isize); 2] = [
-    (1, 1), (-1, 1) 
-];
+const TO_CHECK: [(isize, isize); 2] = [(1, 1), (-1, 1)];
 
 const CHARS: [char; 2] = ['M', 'S'];
 
@@ -15,7 +13,10 @@ fn invert_char(character: char) -> Result<char> {
     })
 }
 
-fn solve<T>(lines: Lines<T>) -> Result<isize> where T: BufRead {
+fn solve<T>(lines: Lines<T>) -> Result<isize>
+where
+    T: BufRead,
+{
     let mut score = 0;
     let mut matrix: Vec<char> = vec![];
     let mut width: Option<usize> = None;
@@ -42,7 +43,7 @@ fn solve<T>(lines: Lines<T>) -> Result<isize> where T: BufRead {
                 if x < 0 || x >= width || y < 0 || y >= height {
                     continue 'outer;
                 }
-                let character = matrix[(y * width + x) as usize]; 
+                let character = matrix[(y * width + x) as usize];
                 if !CHARS.contains(&character) {
                     continue 'outer;
                 }
@@ -59,7 +60,7 @@ fn solve<T>(lines: Lines<T>) -> Result<isize> where T: BufRead {
             score += 1;
         }
     }
-    
+
     Ok(score)
 }
 
@@ -74,7 +75,8 @@ mod tests {
     use super::*;
     #[test]
     fn test_example() {
-        let input = std::io::Cursor::new(b"MMMSXXMASM
+        let input = std::io::Cursor::new(
+            b"MMMSXXMASM
 MSAMXMSMSA
 AMXSXMAAMM
 MSAMASMSMX
@@ -83,7 +85,8 @@ XXAMMXXAMA
 SMSMSASXSS
 SAXAMASAAA
 MAMMMXMMMM
-MXMXAXMASX");
+MXMXAXMASX",
+        );
         let res = solve(input.lines()).unwrap();
         assert_eq!(res, 9);
     }

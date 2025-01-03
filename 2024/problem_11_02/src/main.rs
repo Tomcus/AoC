@@ -1,6 +1,6 @@
 use anyhow::*;
-use std::io::Read;
 use std::collections::HashMap;
+use std::io::Read;
 
 type Cache = HashMap<usize, HashMap<usize, usize>>;
 
@@ -21,7 +21,8 @@ fn solve_rec(stone: usize, iteration: usize, cache: &mut Cache) -> usize {
             0 => solve_rec(1, iteration - 1, cache),
             x if numb_digits(x) % 2 == 0 => {
                 let modulator = 10usize.pow(numb_digits(x) / 2);
-                solve_rec(stone / modulator, iteration - 1, cache) + solve_rec(stone % modulator, iteration - 1, cache)
+                solve_rec(stone / modulator, iteration - 1, cache)
+                    + solve_rec(stone % modulator, iteration - 1, cache)
             }
             x => solve_rec(x * 2024, iteration - 1, cache),
         };
